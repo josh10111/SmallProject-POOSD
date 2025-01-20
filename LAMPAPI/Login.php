@@ -1,12 +1,8 @@
 <?php
 
-// This is an API endpoint for logging into the Contact Manger Website
-// We will receive a request in JSON format
-// Based on the information in the JSON, we will need to make a query on the database to retrieve the needed information
-// In this case it is the User's information
+include('/var/www/config/config.php'); // config
 
-// receive request
-//receive JSON
+// receive http request in JSON format
 $file = file_get_contents('php://input');
 $jsonObj = json_decode($file);
 
@@ -14,43 +10,40 @@ $jsonObj = json_decode($file);
 $login = $jsonObj->username;
 $password = $jsonObj->password;
 
-// connect to database and prepare the SQL statement
-$dbusername = "";
-$dbpassword = "";
-$database = "";
+// connect to database
+$conn = new mysqli($DBHOSTNAME, $DBUSERNAME, $DBPASSWORD, $DBNAME);
 
-$conn = new mysqli('localhost', $dbusername, $dbpassword, $database);
-
-//check if error connected
+//check if error connecting
 if($conn->connect_error)
 {
-    // need to return error
-    errorJSON($conn->connect_error);
-} else
+    errorJSON($conn->connect_error); // return if error
+} else // no error
 {
-    // no error
     // we are connected to database
-    // make sure to fill template with username and password
-
-
-    // check if query retrieved a user or not
-        // if not return error message
-        // if it did we need to return the user in JSON format
-            // which means we need to convert the data into JSON format
+    if(!$result = $conn->query("SELECT * FROM Users WHERE Login={$login} AND Password={$password};")) // query to see matching rows
+    {
+        errorJSON($conn->error);
+    } else
+    {
+        // successful query
+        $user = $result->fetch_assoc();
+        validJSON($user["ID"], $user["FirstName"], $user["LastName"]);
+    }
 }
 
-function validJSON()
+function validJSON($id, $firstName, $lastName) // forms valid JSON
 {
-
-}
-
-function errorJSON($error)
-{
-    $jsonTemp = '{"id":0,"firstName":"","lastName":"","error":"'.$error.'"}';
+    $jsonTemp = '{"id":"'. $id .'","firstName":"'. $firstName .'","lastName":"'. $lastName .'","error":""}';
     sendResult(json_encode($jsonTemp));
 }
 
-function sendResult($jsonResp)
+function errorJSON($error) // forms error JSON
+{
+    $jsonTemp = '{"id":0,"firstName":"","lastName":"","error":"'. $error .'"}';
+    sendResult(json_encode($jsonTemp));
+}
+
+function sendResult($jsonResp) // sends response
 {
     header("Content-type: application/json");
     echo $jsonResp;
