@@ -20,27 +20,28 @@ if($conn->connect_error)
 } else // no error
 {
     // we are connected to database
-    if(!$result = $conn->query("SELECT * FROM Users WHERE Login={$login} AND Password={$password};")) // query to see matching rows
+    $result = $conn->query("SELECT * FROM Users WHERE Login=\"{$login}\" AND Password=\"{$password}\";");
+
+    if(!$user = $result->fetch_object()) // query to see matching rows
     {
-        errorJSON($conn->error);
+        errorJSON("No User Found");
     } else
     {
         // successful query
-        $user = $result->fetch_assoc();
-        validJSON($user["ID"], $user["FirstName"], $user["LastName"]);
+        validJSON($user->ID, $user->FirstName, $user->LastName);
     }
 }
 
 function validJSON($id, $firstName, $lastName) // forms valid JSON
 {
     $jsonTemp = '{"id":"'. $id .'","firstName":"'. $firstName .'","lastName":"'. $lastName .'","error":""}';
-    sendResult(json_encode($jsonTemp));
+    sendResult($jsonTemp);
 }
 
 function errorJSON($error) // forms error JSON
 {
     $jsonTemp = '{"id":0,"firstName":"","lastName":"","error":"'. $error .'"}';
-    sendResult(json_encode($jsonTemp));
+    sendResult($jsonTemp);
 }
 
 function sendResult($jsonResp) // sends response
