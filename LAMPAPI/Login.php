@@ -6,7 +6,7 @@ include('/var/www/config/config.php'); // config
 $file = file_get_contents('php://input');
 $jsonObj = json_decode($file);
 
-// parse for login username and password
+// copy values from received JSON
 $login = $jsonObj->username;
 $password = $jsonObj->password;
 
@@ -16,19 +16,25 @@ $conn = new mysqli($DBHOSTNAME, $DBUSERNAME, $DBPASSWORD, $DBNAME);
 //check if error connecting
 if($conn->connect_error)
 {
-    errorJSON($conn->connect_error); // return if error
+    errorJSON($conn->connect_error); // send error back
 } else // no error
 {
     // we are connected to database
-    $result = $conn->query("SELECT * FROM Users WHERE Login=\"{$login}\" AND Password=\"{$password}\";");
-
-    if(!$user = $result->fetch_object()) // query to see matching rows
+    // make query
+    if(!($result = $conn->query("SELECT * FROM Users WHERE Login=\"{$login}\" AND Password=\"{$password}\";"))) // if error during query
     {
-        errorJSON("No User Found");
-    } else
+        errorJSON($conn->error);
+    } else // no error
     {
-        // successful query
-        validJSON($user->ID, $user->FirstName, $user->LastName);
+        // fetch result into object
+        if(!($user = $result->fetch_object())) // if no object
+        {
+            errorJSON("No User Found");
+        } else
+        {
+            // successful query
+            validJSON($user->ID, $user->FirstName, $user->LastName);
+        }
     }
 }
 
