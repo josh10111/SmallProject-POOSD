@@ -45,7 +45,7 @@ function validJSON($result, $n) // forms valid JSON
     for($i = 0; $i < $n; $i++)
     {
         $obj = $result->fetch_object();
-        $jsonTemp .= ''. $i .':{"firstName":"'. $obj->FirstName .'","lastName":"'. $obj->LastName .'","phone":"'. $obj->Phone .'","email":"'. $obj->Email .'"}';
+        $jsonTemp .= '{"firstName":"'. $obj->FirstName .'","lastName":"'. $obj->LastName .'","phone":"'. $obj->Phone .'","email":"'. $obj->Email .'"}';
 
         if($i < $n-1)
             $jsonTemp .= ',';
