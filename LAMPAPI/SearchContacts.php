@@ -7,7 +7,7 @@ $file = file_get_contents('php://input');
 $jsonObj = json_decode($file);
 
 // copy values from received JSON
-$userID = $jsonObj->id;
+$userID = $jsonObj->userID;
 $search = $jsonObj->search;
 
 // connect to database
