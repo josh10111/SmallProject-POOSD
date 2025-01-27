@@ -21,21 +21,25 @@ if($conn->connect_error)
     errorJSON($conn->connect_error); // send error back
 } else // no error connecting
 {
-    // make a query
-    $result = $conn->query("SELECT * FROM Users WHERE Login=\"{$username}\";");
-    
-    if($result->num_rows > 0) // if data containing username exists
+    // make a query with error check
+    if(!($result = $conn->query("SELECT * FROM Users WHERE Login=\"{$username}\";")))
     {
-        errorJSON("Username taken!"); // return username taken
-    } else // username not taken
+        errorJSON($conn->error);
+    } else // success
     {
-        // insert into database
-        if(!($result = $conn->query("INSERT INTO Users (FirstName, LastName, Login, Password) VALUES (\"{$firstName}\", \"{$lastName}\", \"{$username}\", \"{$password}\");")))
+        if($result->num_rows > 0) // if data containing username exists
         {
-            errorJSON($conn->error); // error inserting
-        } else
+            errorJSON("Username taken!"); // return username taken
+        } else // username not taken
         {
-            validJSON($conn->insert_id, $firstName, $lastName); // inserted
+            // insert into database
+            if(!($result = $conn->query("INSERT INTO Users (FirstName, LastName, Login, Password) VALUES (\"{$firstName}\", \"{$lastName}\", \"{$username}\", \"{$password}\");")))
+            {
+                errorJSON($conn->error); // error inserting
+            } else
+            {
+                validJSON($conn->insert_id, $firstName, $lastName); // inserted
+            }
         }
     }
 }

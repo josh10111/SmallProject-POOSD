@@ -40,7 +40,7 @@ if($conn->connect_error)
 
 function validJSON($id, $firstName, $lastName) // forms valid JSON
 {
-    $jsonTemp = '{"id":"'. $id .'","firstName":"'. $firstName .'","lastName":"'. $lastName .'","error":""}';
+    $jsonTemp = '{"id":'. $id .',"firstName":"'. $firstName .'","lastName":"'. $lastName .'","error":""}';
     sendResult($jsonTemp);
 }
 
