@@ -12,6 +12,11 @@ $lastName = $jsonObj->lastName;
 $username = $jsonObj->username;
 $password = $jsonObj->password;
 
+if(empty($firstName) || empty($lastName) || empty($username) || empty($password))
+{
+    errorJSON("Missing required fields.");
+}
+
 // connect to database
 $conn = new mysqli($DBHOSTNAME, $DBUSERNAME, $DBPASSWORD, $DBNAME);
 
