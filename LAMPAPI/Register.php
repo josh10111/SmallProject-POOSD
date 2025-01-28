@@ -1,4 +1,5 @@
 <?php
+
 include('/var/www/config/config.php'); // config
 
 // receive http request in JSON format
@@ -8,8 +9,13 @@ $jsonObj = json_decode($file);
 // copy values from received JSON
 $firstName = $jsonObj->firstName;
 $lastName = $jsonObj->lastName;
-$username = $jsonObj->login;
+$username = $jsonObj->username;
 $password = $jsonObj->password;
+
+if(empty($firstName) || empty($lastName) || empty($username) || empty($password))
+{
+    errorJSON("Missing required fields.");
+}
 
 // connect to database
 $conn = new mysqli($DBHOSTNAME, $DBUSERNAME, $DBPASSWORD, $DBNAME);
@@ -58,7 +64,6 @@ function errorJSON($error) // forms error JSON
 function sendResult($jsonResp) // sends response
 {
     header("Content-type: application/json");
-
     echo $jsonResp;
     exit();
 }
