@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<html>
+  <body>
+    <div class="hidden" id="userId">1</div>
+  <div class="flex flex-col md:flex-row p-4 bg-primary w-full">
+    <div class="w-full pr-0 md:pr-2 mb-4 md:mb-0 overflow-auto">
+      <h2 class="text-2xl font-bold mb-4 text-blue-800">Contacts</h2>
+      
+      <!-- Search Bar -->
+      <div class="mb-4 flex justify-end items-center">
+        <input type="text" id="searchInput" class="w-1/3 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Search contacts...">
+        <button class="ml-2 bg-blue-800 hover:bg-accent text-white font-bold py-2 px-4 rounded-md" onclick="searchContacts()">Search</button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full table-auto">
+          <thead>
+            <tr class="bg-gray-200 text-gray-600 uppercase text-xs leading-normal">
+              <th class="py-2 px-3 text-left">First Name</th>
+              <th class="py-2 px-3 text-left">Last Name</th>
+              <th class="py-2 px-3 text-left">Number</th>
+              <th class="py-2 px-3 text-left">Email</th>
+              <th class="py-2 px-3 text-left" style="width: 160px;">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="text-gray-600 text-sm" id="contactsTableBody">
+            <tr class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-200" id="1">
+              <td class="py-2 px-3 font-medium">Your</td>
+              <td class="py-2 px-3 font-medium">Mom</td>
+              <td class="py-2 px-3">555 1155 446</td>
+              <td class="py-2 px-3">email@email.com</td>
+              <td class="hidden">1</td>
+              <td class="py-2 px-3 flex space-x-2">
+                <button class="bg-blue-800 hover:bg-accent text-white font-bold py-1 px-3 rounded-full text-xs transition-colors duration-300 edit-btn" style="width: 80px;" onclick="openEditPanel(1)">
+                  Edit
+                </button>
+                <button class="bg-red-600 hover:bg-secondary text-white font-bold py-1 px-3 rounded-full text-xs transition-colors duration-300 details-btn" style="width: 80px;" onclick="deleteContact(1)">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>  
+    
+    <!-- Edit Panel -->
+    <div class="align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full h-fit hidden" id="editPanel">
+      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div class="sm:flex sm:items-start">
+          <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
+            <h3 class="text-lg leading-6 font-medium text-gray-900" id="panel-title">
+              Edit Contact
+            </h3>
+            <div class="mt-2">
+              <form id="editForm" method="post">
+                <input type="hidden" id="contactId" name="contact" value="">
+
+                <div class="mb-4">
+                  <label class="block text-sm font-medium text-gray-700" for="firstName">First Name</label>
+                  <input class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" id="firstName" name="firstName" type="text" value="John"/>
+                </div>
+                <div class="mb-4">
+                  <label class="block text-sm font-medium text-gray-700" for="lastName">Last Name</label>
+                  <input class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" id="lastName" name="lastName" type="text" value="Doe"/>
+                </div>
+                <div class="mb-4">
+                  <label class="block text-sm font-medium text-gray-700" for="productNumber">Number</label>
+                  <input class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" id="productNumber" name="productNumber" type="text" value="123456"/>
+                </div>
+                <div class="mb-4">
+                  <label class="block text-sm font-medium text-gray-700" for="email">Email</label>
+                  <input class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" id="email" name="email" type="text" value="email@email.com"/>
+                </div>
+                <!-- success or failure message -->
+                <div class="mb-4" id="message"></div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+        <button class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-800 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm" onclick="saveChanges()" type="button">
+          Save Changes
+        </button>
+        <button class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" onclick="closeEditPanel()" type="button">
+          Cancel
+        </button>
+      </div>
+    </div>
+
+<!-- panel for devices related to the product -->
+<!-- <div class="hidden" id="devicesPanel"> -->
+  <div class="align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full h-fit hidden" id="devicesPanel">
+    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+      <div class="sm:flex sm:items-start">
+        <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
+          <h3 class="text-lg leading-6 font-medium text-gray-900" id="panel-title">Devices</h3>
+          <div class = "overflow-auto" id="devicesList">
+          </div>
+        </div>
+      </div>
+      <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+      <button class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" onclick="closeDevicesPanel()" type="button">
+        Cancel
+      </button>
+      </div>
+    </div>
+  </div>
+
+  </div>
+</div>
+
+
+</body>
+</html>
+
+<script>
+
+
+  // Copied code 
+  function addContact()
+{
+	let name = document.getElementById("Name").value;
+	let number = document.getElementById("Number").value;
+	document.getElementById("colorAddResult").innerHTML = "";
+
+	let tmp = {};
+	let jsonPayload = JSON.stringify( tmp );
+
+	let url = "scuba2havefun.com/LAMPAPI/AddContact.php";
+
+	
+	let xhr = new XMLHttpRequest();
+	xhr.open("POST", url, true);
+	xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+	try
+	{
+		xhr.onreadystatechange = function() 
+		{
+			if (this.readyState == 4 && this.status == 200) 
+			{
+				document.getElementById("colorAddResult").innerHTML = "Color has been added";
+			}
+		};
+		xhr.send(jsonPayload);
+	}
+	catch(err)
+	{
+		document.getElementById("colorAddResult").innerHTML = err.message;
+	}
+	
+}
+function deleteContact(contactId) {
+  console.log('Deleting contact');
+  console.log(contactId);
+
+  let jsonPayload = JSON.stringify({contactId: contactId});
+  let url = "scuba2havefun.com/LAMPAPI/DeleteContact.php";
+	
+	let xhr = new XMLHttpRequest();
+	xhr.open("POST", url, true);
+	xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+  try {
+    xhr.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById(contactId).innerHTML = '<tr class="border-b border-gray-200 hover:bg-gray-200"><td colspan="6" class="px-4 py-2 text-center">Contact deleted</td></tr>';
+      }
+    };
+    document.getElementById(contactId).innerHTML = '<tr class="border-b border-gray-200 hover:bg-gray-200"><td colspan="6" class="px-4 py-2 text-center">Contact deleted</td></tr>';
+
+    // xhr.send(jsonPayload);
+  } catch(err) {
+    document.getElementById('message').innerHTML = err.message;
+  }
+}
+
+
+  // new format for edit button
+function openEditPanel(contactId) {
+  document.getElementById('editPanel').classList.remove('hidden');
+  console.log('Opening panel');
+  openProdForm(contactId);
+}
+
+function closeEditPanel() {
+  document.getElementById('editPanel').classList.add('hidden');
+
+}
+
+
+function openProdForm(contactId) {
+  console.log('Opening contact');
+  console.log(contactId);
+  document.getElementById('message').innerHTML = '';
+
+  // Find the row with the matching ID
+  const row = document.getElementById(contactId);
+  if (row) {
+    const firstName = row.cells[0].textContent;
+    const lastName = row.cells[1].textContent;
+    const number = row.cells[2].textContent;
+    const email = row.cells[3].textContent;
+
+    // Populate the form fields
+    document.getElementById('firstName').value = firstName;
+    document.getElementById('lastName').value = lastName;
+    document.getElementById('productNumber').value = number; 
+    document.getElementById('email').value = email;
+    document.getElementById('contactId').value = contactId;
+  }
+}
+
+function saveChanges() {
+  console.log('Saving changes');
+  document.getElementById('message').innerHTML = `
+    <div class="text-center text-gray-600 mt-4">Saving changes...</div>
+  `;
+  const firstName = document.getElementById('firstName').value;
+  const lastName = document.getElementById('lastName').value;
+  const number = document.getElementById('productNumber').value;
+  const email = document.getElementById('email').value;
+  const contactId = document.getElementById('contactId').value;
+  console.log(contactId);
+
+  let tmp = {contactId: contactId, firstName: firstName, lastName: lastName, number: number, email: email};
+  let jsonPayload = JSON.stringify(tmp);
+
+  // let url = urlBase + '/UpdateContact.' + extension;
+  // temp
+  url = "scuba2havefun.com/LAMPAPI/UpdateContact.php";
+	
+	let xhr = new XMLHttpRequest();
+	xhr.open("POST", url, true);
+	xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+	try
+	{
+		xhr.onreadystatechange = function() 
+		{
+			if (this.readyState == 4 && this.status == 200) 
+			{
+				document.getElementById("message").innerHTML = '<div class="text-green-600">Contact has been updated</div>';
+			}
+		};
+		xhr.send(jsonPayload);
+	}
+	catch(err)
+	{
+		document.getElementById("message").innerHTML = err.message;
+	}
+
+  console.log('Saving changes');
+
+  // closeEditPanel();
+}
+
+function searchContacts() {
+  const input = document.getElementById('searchInput').value.toLowerCase();
+  const userId = document.getElementById('userId').value;
+  let jsonPayload = JSON.stringify({search: input, userId: userId});
+
+  let url = "scuba2havefun.com/LAMPAPI/SearchContacts.php";
+	
+	let xhr = new XMLHttpRequest();
+	xhr.open("POST", url, true);
+	xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+	try
+	{
+		xhr.onreadystatechange = function() 
+		{
+      if (this.readyState == 4 && this.status == 200) {
+        const rows = JSON.parse(xhr.results);
+      }
+		};
+		xhr.send(jsonPayload);
+	}
+	catch(err)
+	{
+		document.getElementById("message").innerHTML = err.message;
+	}
+
+
+  if (!rows.length) {
+    document.getElementById('message').innerHTML = '<div class="text-red-600">No contacts found</div>';
+    return;
+  }
+
+  for (let i = 0; i < rows.length; i++) {
+    if (i >= 20) {
+      rows[i].style.display = 'none';
+      // send message that they are only allowed to see 20 contacts
+      document.getElementById('message').innerHTML = '<div class="text-red-600">Only 20 contacts are shown out of ' + rows.length + ' contacts matching your search</div>';
+      return;
+    }
+
+    const cells = rows[i].getElementsByTagName('td');
+    let match = false;
+    for (let j = 0; j < cells.length - 1; j++) { // Exclude the last cell with buttons
+      if (cells[j].textContent.toLowerCase().includes(input)) {
+        match = true;
+        break;
+      }
+    }
+  }
+}
+
+</script>
+
+<style>
+  .bg-primary { background-color: #FCF7F8; }
+  .bg-secondary { background-color: #208AAE; }
+  .bg-accent { background-color: #0D2149; }
+  .text-secondary { color: #208AAE; }
+  .text-accent { color: #0D2149; }
+  .text-white { color: white; }
+
+  body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .overflow-x-auto {
+    overflow-x: auto;
+  }
+
+  @media (max-width: 768px) {
+    .p-4 {
+      padding: 1rem;
+    }
+  }
+</style>
+
+</html>
