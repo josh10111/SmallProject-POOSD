@@ -7,7 +7,7 @@ $file = file_get_contents('php://input');
 $jsonObj = json_decode($file);
 
 // copy values from received JSON
-$login = $jsonObj->username;
+$login = $jsonObj->login;
 $password = $jsonObj->password;
 
 // connect to database

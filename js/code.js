@@ -1,25 +1,25 @@
-const urlBase = 'http://COP4331-5.com/LAMPAPI';
+const urlBase = 'http://138.197.77.191/LAMPAPI';
 const extension = 'php';
 
 let userId = 0;
 let firstName = "";
 let lastName = "";
 
-function doLogin()
+
+
+function doLogin(event)
 {
+	event.preventDefault();
+
 	userId = 0;
 	firstName = "";
 	lastName = "";
 	
 	let login = document.getElementById("loginName").value;
 	let password = document.getElementById("loginPassword").value;
-//	var hash = md5( password );
-	
-	document.getElementById("loginResult").innerHTML = "";
 
-	let tmp = {login:login,password:password};
-//	var tmp = {login:login,password:hash};
-	let jsonPayload = JSON.stringify( tmp );
+	console.log("Login:", login);
+	console.log("password:", password);
 	
 	let url = urlBase + '/Login.' + extension;
 
@@ -28,32 +28,35 @@ function doLogin()
 	xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
 	try
 	{
-		xhr.onreadystatechange = function() 
-		{
-			if (this.readyState == 4 && this.status == 200) 
-			{
-				let jsonObject = JSON.parse( xhr.responseText );
-				userId = jsonObject.id;
-		
-				if( userId < 1 )
-				{		
-					document.getElementById("loginResult").innerHTML = "User/Password combination incorrect";
-					return;
+		xhr.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				var response = JSON.parse(xhr.responseText);
+				if (response.error) {
+					alert(response.error);
+				} else {
+					alert("Login successful.");
+					// redirect to contacts.html page
 				}
-		
-				firstName = jsonObject.firstName;
-				lastName = jsonObject.lastName;
-
-				saveCookie();
-	
-				window.location.href = "color.html";
+			} else {
+				console.error("Error during login:", this.statusText);
 			}
 		};
-		xhr.send(jsonPayload);
+		var data = JSON.stringify({
+			login: login, 
+			password: password
+		});
+
+		console.log("Sending data:", data);
+
+		try {
+			xhr.send(data);
+		} catch (e) {
+			console.error("XHR send error:", e);
+		}
 	}
 	catch(err)
 	{
-		document.getElementById("loginResult").innerHTML = err.message;
+		alert(err.message);
 	}
 
 }
@@ -182,4 +185,86 @@ function searchColor()
 		document.getElementById("colorSearchResult").innerHTML = err.message;
 	}
 	
+}
+
+function validRegistration() {
+    var username = document.getElementById("username").value;
+    var password = document.getElementById("password").value;
+    var confirmPassword = document.getElementById("confirmPassword").value;
+    var firstName = document.getElementById("firstName").value;
+    var lastName = document.getElementById("lastName").value;
+
+    console.log("Got to validRegistration");
+
+    if (username == "" || password == "" || confirmPassword == "" || firstName == "" || lastName == "") {
+        alert("Please fill out all fields.");
+        return false;
+    }
+
+    if (password != confirmPassword) {
+        alert("Passwords do not match.");
+        return false;
+    }
+
+    return true;
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("registerForm").onsubmit = function(event) {
+        event.preventDefault(); // Prevent the default form submission
+        if (validRegistration()) {
+            doRegister();
+        }
+	};
+});
+
+function doRegister()
+{
+	var firstName = document.getElementById("firstName").value;
+	var lastName = document.getElementById("lastName").value;
+	var username = document.getElementById("username").value;
+	var password = document.getElementById("password").value;
+
+	console.log("First Name:", firstName);
+    console.log("Last Name:", lastName);
+    console.log("Username:", username);
+    console.log("Password:", password);
+
+	var xhr = new XMLHttpRequest();
+	var url = urlBase + '/Register.' + extension;
+	xhr.open("POST", url, true);
+	xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+	try {
+		xhr.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				var response = JSON.parse(xhr.responseText);
+				if (response.error) {
+					alert(response.error);
+				} else {
+					alert("Registration successful.");
+					showLogin();
+				}
+			} else {
+				console.error("Error during registration:", this.statusText);
+			}
+		};
+	
+		var data = JSON.stringify({
+			firstName: firstName, 
+			lastName: lastName, 
+			login: username, 
+			password: password
+		});
+
+		console.log("Sending data:", data);
+
+		try {
+			xhr.send(data);
+		} catch (e) {
+			console.error("XHR send error:", e);
+		}
+	}
+	catch(err) {
+		alert(err.message);
+	}
 }
