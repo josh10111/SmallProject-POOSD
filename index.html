@@ -1,22 +1,93 @@
 <html>
-<head>
-	<title>COP 4331 LAMP Stack Demo</title>
-	<script type="text/javascript" src="js/md5.js"></script>
-	<script type="text/javascript" src="js/code.js"></script>
-    <link href="css/styles.css" rel="stylesheet">	
-    <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
-</head>
-<body>
+	<head>
+		<title>Scuba 2 Have Fun Login</title>
+		<script type="text/javascript" src="js/md5.js"></script>
+		<script type="text/javascript" src="js/code.js"></script>
+		<link href="./css/styles.css" rel="stylesheet">
+		<link href="./css/output.css" rel="stylesheet">	
+		<link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
 
-<h1 id="title">COP 4331 LAMP Stack Demo</h1>
 
-<div id="loginDiv">
-	<span id="inner-title">PLEASE LOG IN</span>
-	<input type="text" id="loginName" placeholder="Username" /><br />
-	<input type="password" id="loginPassword" placeholder="Password"/><br />
-	<button type="button" id="loginButton" class="buttons" onclick="doLogin();"> Do It </button>
-	<span id="loginResult"></span>
-</div>
+		<script>
+			function showLogin() {
+				document.getElementById("loginDiv").style.display = "block";
+				document.getElementById("registerDiv").style.display = "none";
+			}
 
-</body>
+			function showRegister() {
+				document.getElementById("loginDiv").style.display = "none";
+				document.getElementById("registerDiv").style.display = "block";
+			}
+		</script>
+	</head>
+	<body class="bg-ocean centered-container" onload="showLogin();" >	
+		
+		<!-- Title -->
+		<div class="title-container">
+			<h1 class="bubblegum-sans-regular text-blue-700 text-7xl my-36">Scuba <span class="accent-color">2</span> Have Fun</h1>
+		</div>
+		
+		<div class="centered-container">
+			<!-- Register Container -->
+				<div id="registerDiv" class="max-w-sm mx-auto bg-blue-200 bg-opacity-75 p-8 rounded-lg shadow-lg hidden customBorder">
+					<h2 class="text-2xl font-bold mb-6 text-center text-blue-900">Register Now!</h2>
+					<form id="registerForm" onsubmit="return validRegistration();">
+						<div class="mb-4">
+							<label for="username" class="block text-blue-800 text-sm font-bold mb-2">First Name</label>
+							<input type="text" id="firstName" name="firstName" placeholder="First Name" class="shadow appearance-none customBorder rounded-full w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+						</div>
+						<div class="mb-4">
+							<label for="username" class="block text-blue-800 text-sm font-bold mb-2">Last Name</label>
+							<input type="text" id="lastName" name="lastName" placeholder="Last Name" class="shadow appearance-none customBorder rounded-full w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+						</div>
+						<div class="mb-4">
+							<label for="username" class="block text-blue-800 text-sm font-bold mb-2">Username</label>
+							<input type="text" id="username" name="username" placeholder="Username" class="shadow appearance-none customBorder rounded-full w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+						</div>
+						<div class="mb-4">
+							<label for="password" class="block text-blue-800 text-sm font-bold mb-2">Password</label>
+							<input type="password" id="password" name="password" placeholder="Password" class="shadow appearance-none customBorder rounded-full w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+						</div>
+						<div class="mb-4">
+							<label for="confirmPassword" class="block text-blue-800 text-sm font-bold mb-2">Confirm Password</label>
+							<input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" class="shadow appearance-none customBorder rounded-full w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+						</div>
+						<div class="flex items-center justify-between">
+							<button type="submit" id="registerButton" class="bg-green-500 hover:bg-green-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full ">
+								Register
+							</button>
+						</div>
+						<div class="mt-4 text-center">
+							<button type="button" class="text-blue-600 hover:underline" onclick="showLogin();">Already have an account? Login</button>
+						</div>
+					</form>
+				</div>
+
+			<!-- Login Container -->
+				<div id="loginDiv" class="max-w-sm mx-auto bg-blue-200 bg-opacity-75 p-8 rounded-lg shadow-lg customBorder ">
+					<h2 class="text-2xl font-bold mb-6 text-center text-blue-900">Login</h2>
+					<form id="loginForm" onsubmit="doLogin(event);">
+						<div class="mb-4">
+							<label for="loginName" class="block text-blue-800 text-sm font-bold mb-2">Username</label>
+							<input type="text" id="loginName" name="loginName" placeholder="Username" class="shadow appearance-none customBorder rounded-full w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+						</div>
+						<div class="mb-4">
+							<label for="loginPassword" class="block text-blue-800 text-sm font-bold mb-2">Password</label>
+							<input type="password" id="loginPassword" name="loginPassword" placeholder="Password" class="shadow appearance-none customBorder rounded-full w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+						</div>
+						<div class="flex items-center justify-between">
+							<button type="submit" id="loginButton" class="bg-green-500 hover:bg-green-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full ">
+								Login
+							</button>
+						</div>
+						<div class="mt-4 text-center">
+							<button type="button" class="text-blue-600 hover:underline " onclick="showRegister();">Don't have an account? Register</button>
+						</div>
+					</form>
+				</div>
+			</div>
+
+	</body>
 </html>
+
