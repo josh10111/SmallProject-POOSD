@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<html>
+  <body>
+    <!-- Main Container -->
+      <div class="flex flex-col md:flex-row p-4 bg-primary w-full custom-opacity">
+        <div class="w-full pr-0 md:pr-2 mb-4 md:mb-0 overflow-auto">
+          <div class="mb-4 flex justify-between items-center">
+            <h2 class="text-2xl font-bold text-blue-800">Never Dive Alone!</h2>
+            <!-- Username Display -->
+            <div id="userName" class="bg-green-200 rounded-md border border-black px-2"></div>
+            
+            <!-- userID -->
+            <div id="userIdDisplay" class="hidden"></div>
+
+            <div class="flex items-center">
+              <input type="text" id="searchInput" class="w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Search contacts...">
+              <button class="ml-2 bg-blue-800 hover:bg-accent text-white font-bold py-2 px-4 rounded-md" onclick="searchContacts()">Search</button>
+              <button class="ml-2 bg-blue-800 hover:bg-accent text-white font-bold py-2 px-4 rounded-md" onclick="openCreatePanel()">Create New Contact</button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full table-auto">
+              <thead>
+                <tr class="bg-green-200 text-gray-600 uppercase text-xs leading-normal">
+                  <th class="py-2 px-3 text-left">First Name</th>
+                  <th class="py-2 px-3 text-left">Last Name</th>
+                  <th class="py-2 px-3 text-left">Number</th>
+                  <th class="py-2 px-3 text-left">Email</th>
+                  <th class="py-2 px-3 text-left" style="width: 160px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="text-gray-600 text-sm" id="contactsTableBody">
+                <!-- <tr class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-200" id="1">
+                  <td class="py-2 px-3 font-medium">Your</td>
+                  <td class="py-2 px-3 font-medium">Mom</td>
+                  <td class="py-2 px-3">555 1155 446</td>
+                  <td class="py-2 px-3">email@email.com</td>
+                  <td class="hidden">1</td>
+                  <td class="py-2 px-3 flex space-x-2">
+                    <button class="bg-blue-800 hover:bg-accent text-white font-bold py-1 px-3 rounded-full text-xs transition-colors duration-300 edit-btn" style="width: 80px;" onclick="openEditPanel(1)">
+                      Edit
+                    </button>
+                    <button class="bg-red-600 hover:bg-secondary text-white font-bold py-1 px-3 rounded-full text-xs transition-colors duration-300 details-btn" style="width: 80px;" onclick="openDeleteDropdown(1)">
+                      Delete
+                    </button>
+                  </td>
+                </tr> -->
+              </tbody>
+            </table>
+            <div id="message"></div>
+          </div>
+      </div>  
+    </div>
+    
+    <!-- Edit Panel -->
+    <div class="align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full h-fit hidden" id="editPanel">
+      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div class="sm:flex sm:items-start">
+          <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
+            <h3 class="text-lg leading-6 font-medium text-gray-900" id="panel-title">
+              Edit Contact
+            </h3>
+            <div class="mt-2">
+              <!-- <form id="editForm" method="post"> -->
+                <input type="hidden" id="contactID" name="contact" value="">
+
+                <div class="mb-4">
+                  <label class="block text-sm font-medium text-gray-700" for="firstName">First Name</label>
+                  <input class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" id="editFirstName" name="firstName" type="text" value=""/>
+                </div>
+                <div class="mb-4">
+                  <label class="block text-sm font-medium text-gray-700" for="lastName">Last Name</label>
+                  <input class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" id="editLastName" name="lastName" type="text" value=""/>
+                </div>
+                <div class="mb-4">
+                  <label class="block text-sm font-medium text-gray-700" for="number">Number</label>
+                  <input class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" id="editNumber" name="number" type="text" value=""/>
+                </div>
+                <div class="mb-4">
+                  <label class="block text-sm font-medium text-gray-700" for="email">Email</label>
+                  <input class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" id="editEmail" name="email" type="text" value=""/>
+                </div>
+                <!-- success or failure message -->
+                <div class="mb-4" id="message"></div>
+              <!-- </form> -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+        <button class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-800 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm" onclick="saveChanges()" type="button">
+          Save Changes
+        </button>
+        <button class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" onclick="closeEditPanel()" type="button">
+          Cancel
+        </button>
+      </div>
+    </div>
+
+     <!-- Create New Contact Panel -->
+     <div class="align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full h-fit hidden" id="createPanel">
+      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div class="sm:flex sm:items-start">
+          <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
+            <h3 class="text-lg leading-6 font-medium text-gray-900" id="panel-title">
+              Create New Contact
+            </h3>
+            <div class="mt-2">
+              <!-- <form id="editForm" method="post"> -->
+                <input type="hidden" id="contactID" name="contact" value="">
+
+                <div class="mb-4">
+                  <label class="block text-sm font-medium text-gray-700" for="firstName">First Name</label>
+                  <input class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" id="addFirstName" name="firstName" type="text" value=""/>
+                </div>
+                <div class="mb-4">
+                  <label class="block text-sm font-medium text-gray-700" for="lastName">Last Name</label>
+                  <input class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" id="addLastName" name="lastName" type="text" value=""/>
+                </div>
+                <div class="mb-4">
+                  <label class="block text-sm font-medium text-gray-700" for="Number">Number</label>
+                  <input class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" id="addNumber" name="productNumber" type="text" value=""/>
+                </div>
+                <div class="mb-4">
+                  <label class="block text-sm font-medium text-gray-700" for="email">Email</label>
+                  <input class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" id="addEmail" name="email" type="text" value=""/>
+                </div>
+                <!-- success or failure message -->
+                <div class="mb-4" id="message"></div>
+              <!-- </form> -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+        <button id="createContactButton" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-800 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm" type="button">
+          Save Changes
+        </button>
+        <button class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" onclick="closeCreatePanel()" type="button">
+          Cancel
+        </button>
+      </div>
+    </div>
+
+  <!-- Delete confirmation dropdown -->
+  <div class="hidden fixed w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5" id="deleteConfirmDropdown" style="z-index: 1000;">
+  <div class="py-1">
+    <p class="px-4 py-2 text-sm text-gray-700">Delete this contact?</p>
+    <div id="deleteButtonDiv">
+
+    </div>
+
+    <button type="button" onclick="closeDeleteDropdown()" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+      Cancel  
+    </button>
+  </div>
+
+
+
+</body>
+</html>
+<script type="text/javascript" src="js/code.js"></script>
+
+<script>
+  var baseURL = 'http://138.197.77.191'
+
+  document.addEventListener('DOMContentLoaded', function() {
+    // read cookies - working
+    readCookie();
+    
+    // populate contacts table - working
+    searchContacts();
+
+    // listen for create contact - working
+    document.getElementById('createContactButton').onclick = createContact;
+  });
+
+
+function clearMessage() {
+  document.getElementById("message").innerHTML = '';
+}
+
+// working
+function createContact()
+{
+  const userIdElement = document.getElementById("userIdDisplay");
+  const userIdText = userIdElement ? userIdElement.textContent : "";
+  const userId = userIdText.replace("User ID:", "").trim();
+
+	let firstName = document.getElementById("addFirstName").value;
+  if(document.getElementById("addLastName"))
+  {
+    console.log('Element with ID "addLastName" found');
+    lastName = document.getElementById("addLastName").value;
+  } else {
+    console.error('Element with ID "addLastName" not found');
+  }
+	let number = document.getElementById("addNumber").value;
+	let email = document.getElementById("addEmail").value;
+  let userID = userId;
+
+	let tmp = {firstName: firstName, lastName: lastName, phone: number, email: email, userID: userID};
+	let jsonPayload = JSON.stringify( tmp );
+  console.log(jsonPayload);
+
+	let url = baseURL + "/LAMPAPI/AddContact.php";
+
+	
+	let xhr = new XMLHttpRequest();
+	xhr.open("POST", url, true);
+	xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+	try
+	{
+		xhr.onreadystatechange = function() 
+		{
+			if (this.readyState == 4 && this.status == 200) 
+			{
+        // get the contactID from the response
+        let contactID = JSON.parse(xhr.responseText).contactID;
+				document.getElementById("message").innerHTML = "<div class='text-green-600'>Contact has been added</div>";
+        // add the new contact to the table
+        document.getElementById('contactsTableBody').innerHTML += 
+        `<tr class="border-b border-gray-200 hover:bg-green-200 transition-colors duration-200" id="${contactID}">
+          <td class="py-2 px-3">${firstName}</td>
+          <td class="py-2 px-3">${lastName}</td>
+          <td class="py-2 px-3">${number}</td>
+          <td class="py-2 px-3">${email}</td>
+          <td class="hidden">${contactID}</td>
+          <td class="py-2 px-3 flex space-x-2">
+            <button class="bg-blue-800 hover:bg-accent text-white font-bold py-1 px-3 rounded-full text-xs transition-colors duration-300 edit-btn" style="width: 80px;" onclick="openEditPanel(${contactID})">
+              Edit
+            </button>
+            <button class="bg-red-600 hover:bg-secondary text-white font-bold py-1 px-3 rounded-full text-xs transition-colors duration-300 details-btn" style="width: 80px;" onclick="openDeleteDropdown(${contactID})">
+              Delete
+            </button>
+          </td>
+        </tr>`;
+        // clear the form
+        document.getElementById('addFirstName').value = '';
+        document.getElementById('addLastName').value = '';
+        document.getElementById('addNumber').value = '';
+        document.getElementById('addEmail').value = '';
+			}
+		};
+		xhr.send(jsonPayload);
+	}
+	catch(err)
+	{
+		document.getElementById("message").innerHTML = err.message;
+	}
+	
+}
+
+function openDeleteDropdown(contactID) {
+  clearMessage();
+  document.getElementById('deleteConfirmDropdown').classList.remove('hidden');
+  document.getElementById('deleteButtonDiv').innerHTML = '<button type="button" id="confirmDelete" class="w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-gray-100" onclick="deleteContact(' + contactID + ')">Delete</button>';
+  // document.getElementById('deleteConfirmDropdown').classList.add('block');
+}
+
+function closeDeleteDropdown() {
+  clearMessage();
+  document.getElementById('deleteConfirmDropdown').classList.add('hidden');
+}
+
+// working
+function deleteContact(contactID) {
+  clearMessage();
+  console.log('Deleting contact');
+  console.log(contactID);
+
+  let jsonPayload = JSON.stringify({contactID: contactID});
+  console.log(jsonPayload);
+  let url = baseURL + '/LAMPAPI/DeleteContact.php';
+	
+	let xhr = new XMLHttpRequest();
+	xhr.open("POST", url, true);
+	xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+  try {
+    xhr.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById(contactID).innerHTML = '<tr class="border-b border-gray-200 hover:bg-green-200"><td colspan="6" class="px-4 py-2 text-center">Contact deleted</td></tr>';
+      }
+    };
+    // document.getElementById(contactID).innerHTML = '<tr class="border-b border-gray-200 hover:bg-gray-200"><td colspan="6" class="px-4 py-2 text-center">Contact deleted</td></tr>';
+
+    xhr.send(jsonPayload);
+  } catch(err) {
+    document.getElementById('message').innerHTML = err.message;
+  }
+}
+
+
+// new format for edit button
+function openEditPanel(contactID) {
+  clearMessage();
+  closeCreatePanel();
+  document.getElementById('editPanel').classList.remove('hidden');
+  console.log('Opening panel');
+  openProdForm(contactID);
+}
+
+function closeEditPanel() {
+  clearMessage();
+  document.getElementById('editPanel').classList.add('hidden');
+
+}
+
+function closeCreatePanel() {
+  document.getElementById('createPanel').classList.add('hidden');
+
+}
+
+function openCreatePanel() {
+  clearMessage();
+  closeEditPanel();
+  document.getElementById('createPanel').classList.remove('hidden');
+}
+
+function openProdForm(contactID) {
+  clearMessage();
+  console.log('Opening contact');
+  console.log(contactID);
+  document.getElementById('message').innerHTML = '';
+
+  // Find the row with the matching ID
+  const row = document.getElementById(contactID);
+  if (row) {
+    const firstName = row.cells[0].textContent;
+    const lastName = row.cells[1].textContent;
+    const number = row.cells[2].textContent;
+    const email = row.cells[3].textContent;
+
+    // Populate the form fields
+    document.getElementById('editFirstName').value = firstName;
+    document.getElementById('editLastName').value = lastName;
+    document.getElementById('editNumber').value = number; 
+    document.getElementById('editEmail').value = email;
+    document.getElementById('contactID').value = contactID;
+  }
+}
+
+// working
+function saveChanges() {
+  console.log('Saving changes');
+  document.getElementById('message').innerHTML = `
+    <div class="text-center text-gray-600 mt-4">Saving changes...</div>
+  `;
+  const firstName = document.getElementById('editFirstName').value;
+  const lastName = document.getElementById('editLastName').value;
+  const number = document.getElementById('editNumber').value;
+  const email = document.getElementById('editEmail').value;
+  const contactID = document.getElementById('contactID').value;
+  console.log(contactID);
+
+  let tmp = {contactID: contactID, firstName: firstName, lastName: lastName, phone: number, email: email};
+  let jsonPayload = JSON.stringify(tmp);
+
+  // character limit on all strings are 30 on dev
+  // add regex later
+
+  console.log(jsonPayload);
+
+  // let url = urlBase + '/UpdateContact.' + extension;
+  // temp
+  url = baseURL + "/LAMPAPI/UpdateContact.php";
+	
+	let xhr = new XMLHttpRequest();
+	xhr.open("POST", url, true);
+	xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+	try
+	{
+		xhr.onreadystatechange = function() 
+		{
+			if (this.readyState == 4 && this.status == 200) 
+			{
+        // get the contactID from the response
+        let contactID = JSON.parse(xhr.responseText).contactID;
+				document.getElementById("message").innerHTML = '<div class="text-green-600">Contact has been updated</div>';
+        // document.getElementById('contactsTableBody').innerHTML = '';
+        // update the row with the new contact
+        document.getElementById(contactID).innerHTML = `<td class="py-2 px-3">${firstName}</td>
+          <td class="py-2 px-3">${lastName}</td>
+          <td class="py-2 px-3">${number}</td>
+          <td class="py-2 px-3">${email}</td>
+          <td class="hidden">${contactID}</td>
+          <td class="py-2 px-3 flex space-x-2">
+            <button class="bg-blue-800 hover:bg-accent text-white font-bold py-1 px-3 rounded-full text-xs transition-colors duration-300 edit-btn" style="width: 80px;" onclick="openEditPanel(${contactID})">
+              Edit
+            </button>
+            <button class="bg-red-600 hover:bg-secondary text-white font-bold py-1 px-3 rounded-full text-xs transition-colors duration-300 details-btn" style="width: 80px;" onclick="openDeleteDropdown(${contactID})">
+              Delete
+            </button>
+          </td>
+        </tr>`;
+        // clear the form
+        document.getElementById('editFirstName').value = '';
+        document.getElementById('editLastName').value = '';
+        document.getElementById('editNumber').value = '';
+        document.getElementById('editEmail').value = '';
+        document.getElementById('contactID').value = '';
+			}
+		};
+		xhr.send(jsonPayload);
+	}
+	catch(err)
+	{
+		document.getElementById("message").innerHTML = err.message;
+	}
+
+  console.log('Saving changes');
+
+  closeEditPanel();
+}
+
+// working
+function searchContacts() {
+  readCookie();
+  
+  clearMessage();
+	const input = document.getElementById('searchInput').value.toLowerCase();
+  const userIdElement = document.getElementById("userIdDisplay");
+  const userIdText = userIdElement ? userIdElement.textContent : "";
+  const userId = userIdText.replace("User ID:", "").trim();
+    
+  if (!userId || userId === "-1") {
+      console.error("UserID not found or invalid");
+      return;
+  }
+  
+  let jsonPayload = JSON.stringify({search: input, userID: userId});
+
+	let url = baseURL + "/LAMPAPI/SearchContacts.php";
+	
+	let xhr = new XMLHttpRequest();
+	xhr.open("POST", url, true);
+	xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+	try {
+		xhr.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				const response = JSON.parse(xhr.responseText);
+				const rows = response.results; // Assuming the server returns an object with a 'results' array
+
+				if (!rows.length) {
+					document.getElementById('message').innerHTML = '<div class="text-red-600">No contacts found</div>';
+					return;
+				}
+
+				// Clear the current table body
+				document.getElementById('contactsTableBody').innerHTML = '';
+
+				for (let i = 0; i < rows.length; i++) {
+					if (i >= 20) {
+						// Limit to 20 contacts
+						document.getElementById('message').innerHTML = '<div class="text-red-600">Only 20 contacts are shown out of ' + rows.length + ' contacts matching your search</div>';
+						break;
+					}
+					document.getElementById('contactsTableBody').innerHTML += 
+					`<tr class="border-b border-gray-200 hover:bg-green-200 transition-colors duration-200" id="${rows[i].contactID}">
+						<td class="py-2 px-3">${rows[i].firstName}</td>
+						<td class="py-2 px-3">${rows[i].lastName}</td>
+						<td class="py-2 px-3">${rows[i].phone}</td>
+						<td class="py-2 px-3">${rows[i].email}</td>
+						<td class="hidden">${rows[i].contactID}</td>
+						<td class="py-2 px-3 flex space-x-2">
+							<button class="bg-blue-800 hover:bg-accent text-white font-bold py-1 px-3 rounded-full text-xs transition-colors duration-300 edit-btn" style="width: 80px;" onclick="openEditPanel(${rows[i].contactID})">
+								Edit
+							</button>
+							<button class="bg-red-600 hover:bg-secondary text-white font-bold py-1 px-3 rounded-full text-xs transition-colors duration-300 details-btn" style="width: 80px;" onclick="openDeleteDropdown(${rows[i].contactID})">
+								Delete
+							</button>
+						</td>
+					</tr>`;
+				}
+			}
+		};
+		xhr.send(jsonPayload);
+	} catch(err) {
+		document.getElementById("message").innerHTML = err.message;
+	}
+}
+</script>
+
+<style>
+  .bg-primary { background-color: #ADD8E6; }
+  .bg-secondary { background-color: #208AAE; }
+  .bg-accent { background-color: var(--green-200); } 
+  .text-secondary { color: #208AAE; }
+  .text-accent { color: #0D2149; }
+  .text-white { color: white; }
+
+  body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('css/images/oceanBKG.svg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .custom-opacity {
+    opacity: 0.85;
+  }
+
+  .overflow-x-auto {
+    overflow-x: auto;
+  }
+
+  @media (max-width: 768px) {
+    .p-4 {
+      padding: 1rem;
+    }
+  }
+</style>
+
+</html>

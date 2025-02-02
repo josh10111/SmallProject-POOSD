@@ -11,7 +11,7 @@
 
 	$inData = getRequestInfo();
 
-	$userID = isset($inData["userID"]) ? $inData["userID"] : $_SESSION["userID"];
+	$userId = $_SESSION["ID"];
 	$contactID =$inData["contactID"];
 	$firstname = $inData["firstName"];
 	$lastname = $inData["lastName"];
