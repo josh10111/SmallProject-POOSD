@@ -20,6 +20,34 @@ function doLogin(event)
 
 	console.log("Login:", login);
 	console.log("password:", password);
+
+	// Easter egg check
+	if (login === "RICK-LEINECKER" && password === "scuba2havefun") {
+		// top easter egg
+		document.getElementById("easterEggImage-top").classList.remove("hidden");
+		document.getElementById("easterEggImage-top").classList.add("spin");
+
+		// bottom easter egg
+		document.getElementById("easterEggImage-bottom").classList.remove("hidden");
+		document.getElementById("easterEggImage-bottom").classList.add("spin");
+
+		
+		// right easter egg
+		document.getElementById("easterEggImage-right").classList.remove("hidden");
+		document.getElementById("easterEggImage-right").classList.add("swim");
+
+		
+		// left easter egg
+		document.getElementById("easterEggImage-left").classList.remove("hidden");
+		document.getElementById("easterEggImage-left").classList.add("swim");
+
+		
+		// hide status
+		document.getElementById("errorStatus").classList.add("hidden");
+		document.getElementById("loginStatus").classList.add("hidden");
+		
+		return; 
+	}
 	
 	let url = urlBase + '/Login.' + extension;
 
