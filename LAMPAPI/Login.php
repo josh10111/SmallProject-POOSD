@@ -33,9 +33,18 @@ if($conn->connect_error)
         } else
         {
             // successful query
+            setCookies($user->ID, $user->FirstName, $user->LastName);
             validJSON($user->ID, $user->FirstName, $user->LastName);
         }
     }
+}
+
+function setCookies($id, $firstName, $lastName) // sets cookies
+{
+    $expireTime = time() + (20 * 60); // 20 minutes from now
+    setcookie("userId", $id, $expireTime, "/");
+    setcookie("firstName", $firstName, $expireTime, "/");
+    setcookie("lastName", $lastName, $expireTime, "/");
 }
 
 function validJSON($id, $firstName, $lastName) // forms valid JSON

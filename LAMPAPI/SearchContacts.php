@@ -20,7 +20,7 @@ if($conn->connect_error)
 } else // no error connecting
 {
     // make a query with error check
-    if(!($result = $conn->query("SELECT * FROM Contacts WHERE UserID={$userID} AND (CONCAT(FirstName, \" \", LastName) LIKE '{$search}%' OR FirstName LIKE '{$search}%' OR LastName LIKE '{$search}%' OR Phone LIKE '{$search}%' OR Email LIKE '{$search}%') ORDER BY LastName;")))
+    if(!($result = $conn->query("SELECT * FROM Contacts WHERE UserID={$userID} AND (FirstName LIKE '{$search}%' OR LastName LIKE '{$search}%' OR Phone LIKE '{$search}%' OR Email LIKE '{$search}%');")))
     {
         errorJSON($conn->error);
     } else

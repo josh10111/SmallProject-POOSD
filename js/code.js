@@ -31,15 +31,35 @@ function doLogin(event)
 		xhr.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
 				var response = JSON.parse(xhr.responseText);
+
 				if (response.error) {
-					alert(response.error);
+					// show error status
+					document.getElementById("errorStatus").classList.remove("hidden");
+					document.getElementById("errorMsgBox").innerHTML = response.error;
+
+					// Hide the error box after 3 seconds
+					setTimeout(function() {
+						document.getElementById("errorStatus").classList.add("hidden");
+					}, 5000);
+
 				} else {
-					alert("Login successful.");
-					// redirect to contacts.html page
+					
+					// set userId (userId is sent as "id" from server), firstName, lastName
+					userId = response.id;
+					firstName = response.firstName;
+					lastName = response.lastName;
+					
+					// save cookies
+					saveCookie();
+
+					// show login status
+                    document.getElementById("loginStatus").classList.remove("hidden");
+                    // redirect to contacts.html page after a short delay
+                    setTimeout(function() {
+                        window.location.href = "contacts.html";
+                    }, 1000);
 				}
-			} else {
-				console.error("Error during login:", this.statusText);
-			}
+			} 
 		};
 		var data = JSON.stringify({
 			login: login, 
@@ -66,18 +86,22 @@ function saveCookie()
 	let minutes = 20;
 	let date = new Date();
 	date.setTime(date.getTime()+(minutes*60*1000));	
-	document.cookie = "firstName=" + firstName + ",lastName=" + lastName + ",userId=" + userId + ";expires=" + date.toGMTString();
+	document.cookie = "firstName=" + firstName + ";expires=" + date.toGMTString() + ";path=/";
+	document.cookie = "lastName=" + lastName + ";expires=" + date.toGMTString() + ";path=/";
+	document.cookie = "userId=" + userId + ";expires=" + date.toGMTString() + ";path=/";
 }
 
 function readCookie()
 {
 	userId = -1;
 	let data = document.cookie;
-	let splits = data.split(",");
+	let splits = data.split(";");
 	for(var i = 0; i < splits.length; i++) 
 	{
 		let thisOne = splits[i].trim();
 		let tokens = thisOne.split("=");
+		console.log("Cookie:", tokens[0]);
+		console.log("Value:", tokens[1]);
 		if( tokens[0] == "firstName" )
 		{
 			firstName = tokens[1];
@@ -98,7 +122,9 @@ function readCookie()
 	}
 	else
 	{
-		document.getElementById("userName").innerHTML = "Logged in as " + firstName + " " + lastName;
+		document.getElementById("userName").innerHTML = "Logged in as: " + firstName + " " + lastName;
+		document.getElementById("userIdDisplay").innerHTML = "User ID:" + userId;
+
 	}
 }
 

@@ -2,8 +2,8 @@
 
 	include('/var/www/config/config.php');
 	session_start();
-	$_SESSION["userID"] = 1; //for test purpose.
-	if (!isset($_SESSION["userID"])) 
+	$_SESSION["ID"] = 1; //for test purpose.
+	if (!isset($_SESSION["ID"])) 
 	{
     		returnWithError("User is not logged in.");
     		exit();
@@ -11,17 +11,16 @@
 
 	$inData = getRequestInfo();
 
+	$userId = $inData["userID"];
 	$firstname = $inData["firstName"];
 	$lastname = $inData["lastName"];
 	$phone = $inData["phone"];
 	$email = $inData["email"];
-	$userID = isset($inData["userID"]) ? $inData["userID"] : $_SESSION["userID"];
-
-	if (empty($userID) || empty($firstname) || empty($lastname) || empty($phone)|| empty($email)) 
+	if (empty($userId) || empty($firstname) || empty($lastname) || empty($phone)|| empty($email)) 
 	{
     		returnWithError("Missing required fields.");
    		exit();
-	}
+	}	
 	$conn = new mysqli($DBHOSTNAME, $DBUSERNAME, $DBPASSWORD, $DBNAME);
 	if ($conn->connect_error) 
 	{
@@ -30,7 +29,7 @@
 	else
 	{
 		$stmt = $conn->prepare("insert into Contacts (FirstName,LastName,Phone,Email,UserID) VALUES(?,?,?,?,?)");
-		$stmt->bind_param("ssssi", $firstname, $lastname, $phone, $email, $userID);
+		$stmt->bind_param("ssssi", $firstname, $lastname, $phone, $email, $userId);
 		if($stmt->execute())
 		{
 			$contactId = $stmt->insert_id;
