@@ -8,8 +8,13 @@
         <div class="w-full pr-0 md:pr-2 mb-4 md:mb-0 overflow-auto">
           <div class="mb-4 flex justify-between items-center">
             <h2 class="text-2xl font-bold text-blue-800">Never Dive Alone!</h2>
-            <!-- Username Display -->
-            <div id="userName" class="bg-green-200 rounded-md border border-black px-2"></div>
+            <!-- Username Display and Logout -->
+            <div class="flex items-center gap-2">
+              <div id="userName" class="bg-green-200 rounded-md border border-black px-2"></div>
+              <button onclick="doLogout()" class="bg-red-600 hover:bg-secondary text-white font-bold py-1 px-3 rounded-md text-sm">
+                Logout
+              </button>
+            </div>
             
             <!-- userID -->
             <div id="userIdDisplay" class="hidden"></div>
@@ -176,11 +181,35 @@
 
     // listen for create contact - working
     document.getElementById('createContactButton').onclick = createContact;
+
+    // Format phone numbers as they're typed
+    ['addNumber', 'editNumber'].forEach(id => {
+      document.getElementById(id).addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '').substring(0,10);
+        if (value.length >= 6) {
+          value = `${value.slice(0,3)}-${value.slice(3,6)}-${value.slice(6)}`;
+        } else if (value.length >= 3) {
+          value = `${value.slice(0,3)}-${value.slice(3)}`;
+        }
+        e.target.value = value;
+      });
+    });
   });
 
 
 function clearMessage() {
   document.getElementById("message").innerHTML = '';
+}
+
+function validateEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+function validatePhone(phone) {
+  // Allows formats like: 123-456-7890, (123) 456-7890, 1234567890
+  const phoneRegex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+  return phoneRegex.test(phone);
 }
 
 // working
@@ -190,17 +219,33 @@ function createContact()
   const userIdText = userIdElement ? userIdElement.textContent : "";
   const userId = userIdText.replace("User ID:", "").trim();
 
-	let firstName = document.getElementById("addFirstName").value;
+	let firstName = document.getElementById("addFirstName").value.trim();
   if(document.getElementById("addLastName"))
   {
     console.log('Element with ID "addLastName" found');
-    lastName = document.getElementById("addLastName").value;
+    lastName = document.getElementById("addLastName").value.trim();
   } else {
     console.error('Element with ID "addLastName" not found');
   }
-	let number = document.getElementById("addNumber").value;
-	let email = document.getElementById("addEmail").value;
+	let number = document.getElementById("addNumber").value.trim();
+	let email = document.getElementById("addEmail").value.trim();
   let userID = userId;
+
+  // Validation
+  if (!firstName || !lastName) {
+    document.getElementById("message").innerHTML = "<div class='text-red-600'>First name and last name are required</div>";
+    return;
+  }
+  
+  if (!validatePhone(number)) {
+    document.getElementById("message").innerHTML = "<div class='text-red-600'>Please enter a valid phone number (e.g., 123-456-7890)</div>";
+    return;
+  }
+  
+  if (!validateEmail(email)) {
+    document.getElementById("message").innerHTML = "<div class='text-red-600'>Please enter a valid email address</div>";
+    return;
+  }
 
 	let tmp = {firstName: firstName, lastName: lastName, phone: number, email: email, userID: userID};
 	let jsonPayload = JSON.stringify( tmp );
@@ -243,6 +288,7 @@ function createContact()
         document.getElementById('addLastName').value = '';
         document.getElementById('addNumber').value = '';
         document.getElementById('addEmail').value = '';
+        closeCreatePanel();
 			}
 		};
 		xhr.send(jsonPayload);
@@ -283,7 +329,9 @@ function deleteContact(contactID) {
     xhr.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
         document.getElementById(contactID).innerHTML = '<tr class="border-b border-gray-200 hover:bg-green-200"><td colspan="6" class="px-4 py-2 text-center">Contact deleted</td></tr>';
+        closeDeleteDropdown();
       }
+
     };
     // document.getElementById(contactID).innerHTML = '<tr class="border-b border-gray-200 hover:bg-gray-200"><td colspan="6" class="px-4 py-2 text-center">Contact deleted</td></tr>';
 
@@ -349,12 +397,28 @@ function saveChanges() {
   document.getElementById('message').innerHTML = `
     <div class="text-center text-gray-600 mt-4">Saving changes...</div>
   `;
-  const firstName = document.getElementById('editFirstName').value;
-  const lastName = document.getElementById('editLastName').value;
-  const number = document.getElementById('editNumber').value;
-  const email = document.getElementById('editEmail').value;
+  const firstName = document.getElementById('editFirstName').value.trim();
+  const lastName = document.getElementById('editLastName').value.trim();
+  const number = document.getElementById('editNumber').value.trim();
+  const email = document.getElementById('editEmail').value.trim();
   const contactID = document.getElementById('contactID').value;
   console.log(contactID);
+
+  // Validation
+  if (!firstName || !lastName) {
+    document.getElementById("message").innerHTML = "<div class='text-red-600'>First name and last name are required</div>";
+    return;
+  }
+  
+  if (!validatePhone(number)) {
+    document.getElementById("message").innerHTML = "<div class='text-red-600'>Please enter a valid phone number (e.g., 123-456-7890)</div>";
+    return;
+  }
+  
+  if (!validateEmail(email)) {
+    document.getElementById("message").innerHTML = "<div class='text-red-600'>Please enter a valid email address</div>";
+    return;
+  }
 
   let tmp = {contactID: contactID, firstName: firstName, lastName: lastName, phone: number, email: email};
   let jsonPayload = JSON.stringify(tmp);
